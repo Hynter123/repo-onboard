@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "description": "Link-only benchmark source index; no issue/PR text, source code, or changed-file labels are included.",
+  "license": "CC-BY-4.0 applies only to this curated index; linked content remains under its owners' terms.",
+  "entries": [
+    {
+      "id": "Delgan/loguru#1527",
+      "repository": "Delgan/loguru",
+      "issue_number": 1527,
+      "pull_request_number": 1529,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1527",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1529"
+    },
+    {
+      "id": "Delgan/loguru#1503",
+      "repository": "Delgan/loguru",
+      "issue_number": 1503,
+      "pull_request_number": 1510,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1503",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1510"
+    },
+    {
+      "id": "Delgan/loguru#1502",
+      "repository": "Delgan/loguru",
+      "issue_number": 1502,
+      "pull_request_number": 1504,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1502",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1504"
+    },
+    {
+      "id": "Delgan/loguru#1501",
+      "repository": "Delgan/loguru",
+      "issue_number": 1501,
+      "pull_request_number": 1508,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1501",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1508"
+    },
+    {
+      "id": "Delgan/loguru#1500",
+      "repository": "Delgan/loguru",
+      "issue_number": 1500,
+      "pull_request_number": 1507,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1500",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1507"
+    },
+    {
+      "id": "Delgan/loguru#1335",
+      "repository": "Delgan/loguru",
+      "issue_number": 1335,
+      "pull_request_number": 1462,
+      "issue_url": "https://github.com/Delgan/loguru/issues/1335",
+      "pull_request_url": "https://github.com/Delgan/loguru/pull/1462"
+    },
+    {
+      "id": "theskumar/python-dotenv#525",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 525,
+      "pull_request_number": 615,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/525",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/615"
+    },
+    {
+      "id": "theskumar/python-dotenv#710",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 710,
+      "pull_request_number": 711,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/710",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/711"
+    },
+    {
+      "id": "theskumar/python-dotenv#699",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 699,
+      "pull_request_number": 700,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/699",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/700"
+    },
+    {
+      "id": "theskumar/python-dotenv#697",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 697,
+      "pull_request_number": 698,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/697",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/698"
+    },
+    {
+      "id": "theskumar/python-dotenv#661",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 661,
+      "pull_request_number": 680,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/661",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/680"
+    },
+    {
+      "id": "theskumar/python-dotenv#637",
+      "repository": "theskumar/python-dotenv",
+      "issue_number": 637,
+      "pull_request_number": 640,
+      "issue_url": "https://github.com/theskumar/python-dotenv/issues/637",
+      "pull_request_url": "https://github.com/theskumar/python-dotenv/pull/640"
+    },
+    {
+      "id": "tox-dev/pipdeptree#725",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 725,
+      "pull_request_number": 726,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/725",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/726"
+    },
+    {
+      "id": "tox-dev/pipdeptree#699",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 699,
+      "pull_request_number": 705,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/699",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/705"
+    },
+    {
+      "id": "tox-dev/pipdeptree#607",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 607,
+      "pull_request_number": 608,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/607",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/608"
+    },
+    {
+      "id": "tox-dev/pipdeptree#596",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 596,
+      "pull_request_number": 597,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/596",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/597"
+    },
+    {
+      "id": "tox-dev/pipdeptree#583",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 583,
+      "pull_request_number": 590,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/583",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/590"
+    },
+    {
+      "id": "tox-dev/pipdeptree#450",
+      "repository": "tox-dev/pipdeptree",
+      "issue_number": 450,
+      "pull_request_number": 589,
+      "issue_url": "https://github.com/tox-dev/pipdeptree/issues/450",
+      "pull_request_url": "https://github.com/tox-dev/pipdeptree/pull/589"
+    },
+    {
+      "id": "tiangolo/typer#1156",
+      "repository": "tiangolo/typer",
+      "issue_number": 1156,
+      "pull_request_number": 1410,
+      "issue_url": "https://github.com/tiangolo/typer/issues/1156",
+      "pull_request_url": "https://github.com/tiangolo/typer/pull/1410"
+    },
+    {
+      "id": "tiangolo/typer#1787",
+      "repository": "tiangolo/typer",
+      "issue_number": 1787,
+      "pull_request_number": 1788,
+      "issue_url": "https://github.com/tiangolo/typer/issues/1787",
+      "pull_request_url": "https://github.com/tiangolo/typer/pull/1788"
+    },
+    {
+      "id": "jazzband/pip-tools#2472",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 2472,
+      "pull_request_number": 2473,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/2472",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2473"
+    },
+    {
+      "id": "jazzband/pip-tools#2235",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 2235,
+      "pull_request_number": 2236,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/2235",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2236"
+    },
+    {
+      "id": "jazzband/pip-tools#2288",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 2288,
+      "pull_request_number": 2358,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/2288",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2358"
+    },
+    {
+      "id": "jazzband/pip-tools#1142",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 1142,
+      "pull_request_number": 2351,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/1142",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2351"
+    },
+    {
+      "id": "jazzband/pip-tools#2319",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 2319,
+      "pull_request_number": 2320,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/2319",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2320"
+    },
+    {
+      "id": "jazzband/pip-tools#2294",
+      "repository": "jazzband/pip-tools",
+      "issue_number": 2294,
+      "pull_request_number": 2305,
+      "issue_url": "https://github.com/jazzband/pip-tools/issues/2294",
+      "pull_request_url": "https://github.com/jazzband/pip-tools/pull/2305"
+    },
+    {
+      "id": "pyinvoke/invoke#1011",
+      "repository": "pyinvoke/invoke",
+      "issue_number": 1011,
+      "pull_request_number": 1037,
+      "issue_url": "https://github.com/pyinvoke/invoke/issues/1011",
+      "pull_request_url": "https://github.com/pyinvoke/invoke/pull/1037"
+    },
+    {
+      "id": "pyinvoke/invoke#398",
+      "repository": "pyinvoke/invoke",
+      "issue_number": 398,
+      "pull_request_number": 611,
+      "issue_url": "https://github.com/pyinvoke/invoke/issues/398",
+      "pull_request_url": "https://github.com/pyinvoke/invoke/pull/611"
+    },
+    {
+      "id": "pyinvoke/invoke#257",
+      "repository": "pyinvoke/invoke",
+      "issue_number": 257,
+      "pull_request_number": 300,
+      "issue_url": "https://github.com/pyinvoke/invoke/issues/257",
+      "pull_request_url": "https://github.com/pyinvoke/invoke/pull/300"
+    },
+    {
+      "id": "pyinvoke/invoke#234",
+      "repository": "pyinvoke/invoke",
+      "issue_number": 234,
+      "pull_request_number": 243,
+      "issue_url": "https://github.com/pyinvoke/invoke/issues/234",
+      "pull_request_url": "https://github.com/pyinvoke/invoke/pull/243"
+    }
+  ]
+}

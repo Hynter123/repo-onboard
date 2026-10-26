@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "license": "CC-BY-4.0 applies to this aggregate result summary.",
+  "benchmark": {
+    "repositories": 6,
+    "tasks": 30,
+    "k": 5,
+    "ground_truth_definition": "Files changed by the merged pull request associated with each issue. Per-task labels and source text are not redistributed."
+  },
+  "baselines": {
+    "BM25 keyword baseline": {
+      "recall@5": 0.6456,
+      "top1": 0.4,
+      "mrr": 0.5436,
+      "subgraph": 0.9122,
+      "reachable": 0.9178
+    },
+    "BGE-small embedding baseline": {
+      "recall@5": 0.7233,
+      "top1": 0.5,
+      "mrr": 0.6181,
+      "subgraph": 0.8789,
+      "reachable": 0.9178
+    },
+    "AST symbol-link baseline": {
+      "recall@5": 0.4778,
+      "top1": 0.4,
+      "mrr": 0.4583,
+      "subgraph": 0.7222,
+      "reachable": 0.9178
+    },
+    "Local Qwen2.5-Coder-7B zero-shot baseline": {
+      "recall@5": 0.6678,
+      "top1": 0.4333,
+      "mrr": 0.5525,
+      "subgraph": 0.9011,
+      "reachable": 0.9178
+    }
+  },
+  "proposed_method": {
+    "recall@5": 0.8011,
+    "top1": 0.5333,
+    "mrr": 0.6672,
+    "subgraph": 0.8956,
+    "reachable": 0.9178
+  },
+  "cross_validation": {
+    "recall@5": 0.7511,
+    "top1": 0.5,
+    "mrr": 0.6339,
+    "subgraph": 0.8956,
+    "reachable": 0.9178
+  },
+  "best_preset": "I 两阶段召回15"
+}

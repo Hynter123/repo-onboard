@@ -1,0 +1,16 @@
+# RepoOnboard — 依赖清单
+# 原则：能少不能多。核心分析只用 Python 标准库 ast，不用 tree-sitter。
+# 向量检索不用 torch / chromadb，用 fastembed(ONNX) + numpy 自算余弦。
+
+requests>=2.31
+numpy>=1.24
+networkx>=3.1
+fastembed>=0.3
+typer>=0.12
+rich>=13.7
+matplotlib>=3.7
+tqdm>=4.66
+
+# --- 可选（仅在需要多语言解析时安装，默认不装）---
+# tree-sitter>=0.21
+# tree-sitter-language-pack>=0.4

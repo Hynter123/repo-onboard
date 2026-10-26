@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RepoOnboard · 任意开源仓库结构地图</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app" v-cloak>
+
+  <!-- ================= 首页：输入仓库地址 ================= -->
+  <div v-if="stage !== 'result'" class="home">
+    <div class="home-card">
+      <div class="home-brand">
+        <span class="logo">◉</span>
+        <span class="name">RepoOnboard</span>
+      </div>
+      <p class="home-sub">粘贴一个开源仓库地址，生成它的结构地图</p>
+
+      <div class="home-form">
+        <input v-model="homeUrl" class="big-input" spellcheck="false"
+               placeholder="https://github.com/owner/repo　或　https://gitee.com/owner/repo"
+               @keyup.enter="startAnalyze">
+        <input v-model="homeTask" class="task-input" spellcheck="false"
+               placeholder="（可选）一句话任务，例如：为什么异步环境下日志会丢失？">
+        <button class="go" :disabled="stage === 'loading' || !homeUrl.trim()" @click="startAnalyze">
+          {{ stage === 'loading' ? '解析中…' : '开始解析' }}
+        </button>
+      </div>
+
+      <div class="loading" v-if="stage === 'loading'">
+        <span class="spinner"></span>
+        <span>{{ loadingStep }}</span>
+        <span class="elapsed">已用 {{ elapsed }}s</span>
+      </div>
+
+      <div class="err" v-if="errMsg">{{ errMsg }}</div>
+
+      <div class="examples">
+        <span class="ex-title">预置示例（可选）：</span>
+        <button v-for="r in index.repos" :key="r.slug" class="ex-chip" @click="useExample(r.slug)">
+          {{ r.name }}<span class="ex-meta">{{ r.total_files }} 文件</span>
+        </button>
+        <span v-if="!index.repos.length" class="ex-empty">（可直接输入任意支持的公开仓库）</span>
+      </div>
+
+      <div class="home-note">
+        <p>· 支持 <b>github.com</b> 与 <b>gitee.com</b> 的公开仓库；也可直接填 <code>owner/repo</code>。</p>
+        <p>· <b>只读解析</b>：只做 AST 静态分析，<b>不会执行</b>目标仓库的任何代码。</p>
+        <p>· 上限：压缩包 ≤ 30MB、展开后 ≤ 512MB / 50,000 项、Python 文件 ≤ 4000 个、代码 ≤ 40 万行。</p>
+        <p>· 单次等待最多 90 秒；超时后后台任务可能仍在运行。</p>
+        <p>· 目前只支持 <b>Python</b> 项目。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 结果页 ================= -->
+  <div v-else class="shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">◉</span>
+        <span class="name">RepoOnboard</span>
+        <span class="sub">{{ current ? current.name : '' }}</span>
+        <button class="mini" @click="backHome">← 换个仓库</button>
+      </div>
+
+      <div class="controls">
+        <span class="badge" v-if="current && current._source">
+          {{ current._source.py_files }} py 文件 ·
+          {{ current._source.py_lines }} 行 ·
+          {{ current._elapsed }}s<span v-if="current._cached">（缓存）</span>
+        </span>
+
+        <div class="tabs">
+          <button v-for="t in visibleTabs" :key="t.key"
+                  :class="['tab', { active: tab === t.key }]"
+                  @click="switchTab(t.key)">{{ t.label }}</button>
+        </div>
+
+        <input v-if="tab === 'task'" v-model="q" class="search" placeholder="搜索文件…（如 logger）">
+      </div>
+    </header>
+
+    <main class="stage">
+
+      <section v-show="tab === 'mindmap'" class="panel">
+        <div class="panel-head">
+          <span>思维导图</span>
+          <span class="hint">{{ data ? data.total_files : 0 }} 个文件按目录归组；测试 / 内嵌第三方 / 辅助脚本折叠计数</span>
+        </div>
+        <svg id="mm" width="100%" height="100%"></svg>
+      </section>
+
+      <section v-show="tab === 'paths'" class="panel">
+        <div class="panel-head">
+          <span>主干路径</span>
+          <span class="hint">
+            从入口文件沿最强依赖边走出的关键链路（每条 3–6 个文件）；
+            鼠标划过右侧文件列表会高亮它在各路径中的位置
+          </span>
+        </div>
+        <div class="paths">
+          <div v-if="!paths.length" class="empty">这个仓库未抽出明显的主干路径</div>
+          <div v-for="(p, i) in paths" :key="i" class="pathcard">
+            <div class="phead">
+              <span class="pnum">{{ i + 1 }}</span>
+              <span class="plabel">{{ p.label }}</span>
+              <span class="pcount">{{ p.nodes.length }} 个文件</span>
+            </div>
+            <div class="chain">
+              <template v-for="(f, j) in p.nodes">
+                <span :key="'c' + j" class="chip"
+                      :class="{ hot: hoverPath && hoverPath === f }"
+                      :title="f" @click="selectPath(f)">{{ p.labels[j] }}</span>
+                <span :key="'a' + j" v-if="j < p.nodes.length - 1" class="arrow">→</span>
+              </template>
+            </div>
+          </div>
+          <p class="footnote" v-if="paths.length">
+            路径由程序自动抽取（优先“调用”边、对工具枢纽降权），目的不是穷举依赖，
+            而是给出<b>几条能读得完的阅读顺序</b>。
+          </p>
+        </div>
+      </section>
+
+      <section v-show="tab === 'task'" class="panel">
+        <div class="panel-head">
+          <span>任务定位</span>
+          <select v-model="taskId" @change="onTaskChange" class="sel sel-sm">
+            <option v-for="t in repoTasks" :key="t.id" :value="t.id">
+              {{ t.id }}　{{ t.issue_title.slice(0, 46) }}
+            </option>
+          </select>
+          <span class="hint" v-if="curTask">
+            <template v-if="curTask.gt && curTask.gt.length">
+              推荐 <b class="c-rec">橙</b> · 真实答案 <b class="c-gt">绿</b>
+              · 命中 {{ hitCount }}/{{ curTask.gt.length }}
+            </template>
+            <template v-else>自定义任务：只输出推荐，没有标准答案可比</template>
+          </span>
+        </div>
+        <div id="g6task" class="canvas"></div>
+      </section>
+
+      <aside class="side">
+        <template v-if="sel">
+          <h3 class="side-title">{{ sel.label }}</h3>
+          <div class="path">{{ sel.id }}</div>
+          <dl class="kv">
+            <dt>类型</dt><dd>{{ typeLabel(sel) }}</dd>
+            <dt>结构得分</dt><dd>{{ sel.score.toFixed(3) }}</dd>
+            <dt>被依赖</dt><dd>{{ sel.fan_in }} 个文件</dd>
+            <dt>PageRank</dt><dd>{{ sel.pagerank.toFixed(3) }}</dd>
+          </dl>
+          <div v-if="sel.symbols && sel.symbols.length" class="block">
+            <h4>关键符号</h4>
+            <div v-for="s in sel.symbols" :key="s.name" class="sym">
+              <span class="sym-kind">{{ s.kind === 'class' ? 'C' : 'f' }}</span>
+              <code>{{ s.name }}</code>
+              <span class="sym-in">被调 {{ s.in }}</span>
+            </div>
+          </div>
+          <div v-if="selExplain" class="block">
+            <h4>节点说明<small>（本地 Qwen2.5-Coder-7B）</small></h4>
+            <pre class="explain">{{ selExplain }}</pre>
+          </div>
+        </template>
+
+        <template v-else-if="tab === 'task' && curTask">
+          <h3 class="side-title">任务结果</h3>
+          <div class="path">{{ curTask.id }}</div>
+          <div class="block">
+            <h4>推荐（Top-5）</h4>
+            <div v-for="f in curTask.top5" :key="f.path" class="row">
+              <span :class="['dot', isGt(f.path) ? 'dot-gt' : 'dot-rec']"></span>
+              <code>{{ f.path }}</code>
+              <span v-if="isGt(f.path)" class="tag-gt">命中</span>
+            </div>
+          </div>
+          <div class="block" v-if="curTask.gt && curTask.gt.length">
+            <h4>真实答案（PR 改动）</h4>
+            <div v-for="f in curTask.gt" :key="f" class="row">
+              <span class="dot dot-gt"></span><code>{{ f }}</code>
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
+          <h3 class="side-title">读法</h3>
+          <p class="hint">
+            <b>思维导图</b> 看这个仓库分成哪几块；<br>
+            <b>主干路径</b> 看几条关键链路该按什么顺序读；<br>
+            <b>任务定位</b> 输入一句话任务，看工具推荐哪几个文件。
+          </p>
+          <dl class="kv" v-if="data">
+            <dt>文件数</dt><dd>{{ data.nodes.length }}</dd>
+            <dt>依赖边</dt><dd>{{ data.edges.length }}</dd>
+            <dt>默认视图</dt><dd>{{ data.view.length }} 节点</dd>
+          </dl>
+          <div class="legend">
+            <div><span class="dot dot-rec"></span> 推荐 / 核心</div>
+            <div><span class="dot dot-gt"></span> 真实答案</div>
+            <div><span class="dot dot-test"></span> 测试</div>
+            <div><span class="dot dot-vendor"></span> 内嵌第三方</div>
+          </div>
+        </template>
+
+        <div class="block" v-if="tab !== 'mindmap' && listFiles.length">
+          <h4>核心文件 · 按重要性排序 <small>（{{ listFiles.length }} 个）</small></h4>
+          <div class="filelist">
+            <div v-for="(n, i) in listFiles" :key="n.id" class="frow"
+                 @mouseenter="hoverFile(n.id)" @mouseleave="leaveFile"
+                 @click="pickFromList(n.id)">
+              <span class="fidx">{{ i + 1 }}</span>
+              <span class="fname">{{ n.label }}</span>
+              <span class="fbar"><i :style="{ width: Math.round(n.score * 100) + '%' }"></i></span>
+              <span class="fscore">{{ n.score.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <span>AST 静态分析 · 只读解析，不执行目标仓库代码</span>
+      <span v-if="index.metrics && index.metrics.ours">
+        示例集指标：Recall@5 {{ index.metrics.ours['recall@5'].toFixed(3) }} ·
+        Top-1 {{ index.metrics.ours.top1.toFixed(3) }} ·
+        MRR {{ index.metrics.ours.mrr.toFixed(3) }}
+      </span>
+    </footer>
+  </div>
+</div>
+
+<script src="vendor/vue.global.prod.js"></script>
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/markmap-lib.js"></script>
+<script src="vendor/markmap-view.js"></script>
+<script src="vendor/g6.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
