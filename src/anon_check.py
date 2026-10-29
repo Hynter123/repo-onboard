@@ -12,7 +12,7 @@ RepoOnboard · 匿名与合规自检（D7）
 
 用法：
     python src/anon_check.py
-    python src/anon_check.py --extra "XX大学,YY学院"          # 补充你自己的学校名
+    python src/anon_check.py --extra "机构名A,机构名B"        # 补充需要额外屏蔽的机构名
 """
 
 from __future__ import annotations
