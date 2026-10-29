@@ -36,12 +36,11 @@
 
       <div class="err" v-if="errMsg">{{ errMsg }}</div>
 
-      <div class="examples">
+      <div class="examples" v-if="index.repos.length">
         <span class="ex-title">预置示例（可选）：</span>
         <button v-for="r in index.repos" :key="r.slug" class="ex-chip" @click="useExample(r.slug)">
           {{ r.name }}<span class="ex-meta">{{ r.total_files }} 文件</span>
         </button>
-        <span v-if="!index.repos.length" class="ex-empty">（可直接输入任意支持的公开仓库）</span>
       </div>
 
       <div class="home-note">

@@ -1,11 +1,18 @@
 # RepoOnboard runtime requirements
 # The core analyzer uses Python's standard-library ast module.
 # Embeddings use fastembed with ONNX Runtime; no torch or chromadb required.
+#
+# 只跑网页界面（src/server.py）其实只需要下面「核心」四行；
+# 「命令行与出图」四行只在用 src/graph_build.py / visualize.py / evaluate.py 时才需要。
+# 装完整版（评审常用）直接：pip install -r requirements.txt
 
+# ---- 核心：网页界面 + AST 建图 + 检索 ----
 requests>=2.31
 numpy>=1.24
 networkx>=3.1
 fastembed>=0.3
+
+# ---- 命令行与出图（可选）----
 typer>=0.12
 rich>=13.7
 matplotlib>=3.7

@@ -46,6 +46,12 @@ from pathlib import PurePosixPath, PureWindowsPath
 from urllib.parse import urlparse, unquote
 
 from collections import OrderedDict
+
+# HuggingFace 缓存的默认行为：关掉 Windows 下的符号链接警告；
+# 网络不通时尽快失败，免得"按任务找文件"第一次调用先卡 60 秒才降级。
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+os.environ.setdefault("HF_HUB_DOWNLOAD_TIMEOUT", "10")
+os.environ.setdefault("HF_HUB_ETAG_TIMEOUT", "10")
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))

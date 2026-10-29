@@ -118,7 +118,14 @@ def main():
     ap.add_argument("--k", type=int, default=5)
     args = ap.parse_args()
 
-    tasks = json.loads(Path(args.tasks).read_text(encoding="utf-8"))
+    tasks_path = Path(args.tasks)
+    if not tasks_path.exists():
+        print(f"未找到任务数据：{tasks_path}")
+        print("本发布包不包含 data/tasks.json —— 它含有上游 issue 正文与逐任务标签，")
+        print("再分发权未确认，因此只保留链接索引（data/benchmark_sources.json）。")
+        print("复现评测需自备那 6 个仓库源码与任务标签；只跑交互界面用 src/server.py 即可。")
+        return
+    tasks = json.loads(tasks_path.read_text(encoding="utf-8"))
     tasks.sort(key=lambda t: t["id"])
     for t in tasks:
         t["query"] = (t["issue_title"] + " " + (t["issue_body"] or "")[:800]).strip()
