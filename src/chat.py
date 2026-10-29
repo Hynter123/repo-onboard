@@ -201,16 +201,20 @@ def answer(graph: dict, repo: str, question: str) -> dict:
     if retrieval_fallback:
         for fact in facts:
             fact["reason"] = "语义检索不可用时，按文件名、符号名和结构重要性生成的备用候选。"
+        # 没有语义证据时不再调用本地模型：7B 在证据不足时常给出敷衍拒答，
+        # 既慢又没信息量。这里直接用可核对的静态整理结果回答。
+        text, engine = _fallback_answer(question, intent, facts, total, "语义检索不可用")
+        text = ("当前语义检索不可用，以下是按文件名、符号名和结构重要性生成的备用候选，"
+                "与中文任务描述的相关性可能较弱。\n" + text)
+        engine += " · 语义检索回退"
+        return {"answer": text, "files": facts, "engine": engine,
+                "question": question, "intent": intent}
+
     ai_text, model_status = _ask_model(repo, question, facts, intent, total)
     if ai_text:
         text, engine = ai_text, model_status
     else:
         text, engine = _fallback_answer(question, intent, facts, total, model_status)
-
-    if retrieval_fallback:
-        text = ("当前语义检索不可用，以下是按文件名、符号名和结构重要性生成的备用候选，"
-                "与中文任务描述的相关性可能较弱。\n" + text)
-        engine += " · 语义检索回退"
 
     return {"answer": text, "files": facts, "engine": engine,
             "question": question, "intent": intent}

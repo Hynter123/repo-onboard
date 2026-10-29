@@ -45,13 +45,43 @@ TOKEN = re.compile(r"[A-Za-z][A-Za-z0-9_]{2,}")
 
 # 模型单例：每次 new 一个 TextEmbedding 要重新加载 ONNX，30 个任务会白等一分钟
 _MODEL = None
+_MODEL_FAILED = False          # 语义模型不可用后不再重试，避免每次调用都等一轮下载重试
+
+
+def _hf_reachable(timeout: float = 2.5) -> bool:
+    """模型还没缓存时，先花 2 秒探一下能不能下；不通就直接走非语义路径。
+
+    fastembed 自己的下载重试是 3s + 9s + 27s 的指数退避，在离线/被墙的机器上
+    一次调用要白等 40 秒以上。先探一次，可以把这一跳压到 2 秒。
+    """
+    import os as _os
+
+    base = _os.environ.get("HF_ENDPOINT", "https://huggingface.co").rstrip("/")
+    try:
+        import requests
+
+        resp = requests.head(base, timeout=timeout, allow_redirects=True)
+        return resp.status_code < 500
+    except Exception:
+        return False
 
 
 def get_model():
-    global _MODEL
+    global _MODEL, _MODEL_FAILED
+    if _MODEL_FAILED:
+        raise RuntimeError("语义模型不可用（此前加载失败），本次改用关键词与结构信号")
     if _MODEL is None:
+        cache = Path(__file__).resolve().parent.parent / "fastembed_cache"
+        if not cache.exists() and not _hf_reachable():
+            _MODEL_FAILED = True
+            raise RuntimeError("语义模型尚未缓存且 HuggingFace 不可达，本次改用关键词与结构信号")
         from fastembed import TextEmbedding
-        _MODEL = TextEmbedding(model_name=EMB_MODEL)
+
+        try:
+            _MODEL = TextEmbedding(model_name=EMB_MODEL)
+        except Exception:
+            _MODEL_FAILED = True
+            raise
     return _MODEL
 
 
