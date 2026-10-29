@@ -1,0 +1,11 @@
+﻿# Python
+.venv/
+__pycache__/
+*.pyc
+# 本地数据与缓存（不随仓库分发）
+data/repos/
+data/repos_external/
+data/tasks.json
+fastembed_cache/
+out/
+tmp/

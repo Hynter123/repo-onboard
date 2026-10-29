@@ -12,7 +12,7 @@ RepoOnboard · 匿名与合规自检（D7）
 
 用法：
     python src/anon_check.py
-    python src/anon_check.py --extra "南京大学,东南大学"     # 补充你自己的学校名
+    python src/anon_check.py --extra "XX大学,YY学院"          # 补充你自己的学校名
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # 扫描范围：项目里会进入评审材料的文本类文件
 SCAN_INCLUDE = {".py", ".md", ".html", ".js", ".css", ".json", ".txt", ".yaml", ".yml"}
 SCAN_SKIP_DIRS = {"data/repos", "out", ".venv", "web/data", "web/vendor",
-                  "__pycache__", ".git", "node_modules"}
+                  "__pycache__", ".git", "node_modules", "tmp"}
 
 # 规则：机构类字样
 SCHOOL_PAT = re.compile(
@@ -36,8 +36,13 @@ EMAIL_PAT = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 # 常见高校域名（常见的会命中；自己的校名可用 --extra 补）
 EDU_PAT = re.compile(r"\.edu(\.cn)?\b", re.I)
 
-# 本脚本自身：里面必然含匹配规则的字样
-SKIP_FILES = {"src/anon_check.py"}
+# 本脚本自身的副本（根目录、发布包、快照里都有）：必然含匹配规则的字样
+# 与指导教师沟通.md / 提交核对清单.md 是**内部工作文档**（不随作品提交），
+# 里面必须写"指导教师""学院"这类词，扫描它们只会产生噪声。
+SKIP_NAMES = {"anon_check.py", "与指导教师沟通.md", "提交核对清单.md"}
+# 上游组件清单里的作者邮箱是**第三方元数据**，不是我们的痕迹
+SKIP_EMAIL_NAMES = {"THIRD_PARTY_COMPONENTS.json", "THIRD_PARTY_LICENSES.md",
+                    "THIRD_PARTY_NOTICES.md"}
 
 # 白名单：正文里确实需要出现的词（规则引述、自检说明、合规声明）
 WHITELIST_LINES = (
@@ -51,7 +56,7 @@ def iter_files():
         if not p.is_file() or p.suffix.lower() not in SCAN_INCLUDE:
             continue
         rel = p.relative_to(ROOT).as_posix()
-        if rel in SKIP_FILES:
+        if p.name in SKIP_NAMES:
             continue
         if any(rel.startswith(d) or f"/{d}" in rel for d in SCAN_SKIP_DIRS):
             continue
@@ -84,10 +89,11 @@ def main():
             if SCHOOL_PAT.search(line):
                 reasons.append("机构字样")
             # URL 里的 @（GitHub 讨论链接等）不是邮箱，跳过整行含 http 的
-            if EMAIL_PAT.search(line) and "http" not in line:
-                reasons.append("邮箱")
-            if EDU_PAT.search(line) and "http" not in line:
-                reasons.append("edu 域名")
+            if path.name not in SKIP_EMAIL_NAMES:
+                if EMAIL_PAT.search(line) and "http" not in line:
+                    reasons.append("邮箱")
+                if EDU_PAT.search(line) and "http" not in line:
+                    reasons.append("edu 域名")
             for w in extras:
                 if w in line:
                     reasons.append(f"自定义:{w}")

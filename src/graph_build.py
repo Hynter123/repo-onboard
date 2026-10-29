@@ -235,11 +235,19 @@ def build(root: Path, with_centrality: bool = True) -> dict:
 
         mod_id = f"mod:{rel}"
         parent_dir = "dir:" + ("/".join(rel_path.parts[:-1]) or ".")
+        path_parts = [part.lower() for part in rel_path.parts]
+        file_name = path_parts[-1]
+        is_test = (
+            any(part in ("test", "tests") for part in path_parts[:-1])
+            or file_name in ("test.py", "tests.py")
+            or file_name.startswith("test_")
+            or file_name.endswith("_test.py")
+        )
         nodes[mod_id] = {
             "id": mod_id, "type": "module", "label": rel_path.stem or rel,
             "path": rel, "parent": parent_dir,
             "module_name": module_name_of(p, source_root, root),
-            "is_test": rel.startswith("tests/") or "/tests/" in rel or rel_path.name.startswith("test_"),
+            "is_test": is_test,
         }
         if parent_dir in nodes:
             edges.append({"source": parent_dir, "target": mod_id, "type": "contains"})

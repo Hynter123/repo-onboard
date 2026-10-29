@@ -9,14 +9,15 @@ RepoOnboard · 本地解析服务
 
 提供两个能力：
     1. 静态托管 web/（页面与离线依赖库）
-    2. POST /api/analyze {url, task} → 下载仓库（zip）→ AST 建图 → 返回 payload
+    2. POST /api/analyze {url} → 下载仓库（zip）→ AST 建图 → 返回完整 Python 文件结构
+    3. POST /api/chat {analysis_id, question} → 检索结构证据并生成仓库问答
 
 设计约束（都是踩过的）：
     · github.com:443 不可达，只有 codeload.github.com 可达 → 用 codeload 的 zip
     · gitee.com 直连可用 → 同时支持国内仓库
     · 只读解析：绝不执行目标仓库的任何代码
     · 有上限：zip ≤ 30MB、展开 ≤ 512MB / 50,000 项、py 文件 ≤ 4000、总行数 ≤ 40 万
-    · zip 解压前校验路径和规模；HTTP 请求体与任务描述也有长度上限
+    · zip 解压前校验路径和规模；HTTP 请求体与问题文本也有长度上限
 
 用法：
     python src/server.py              # 默认 127.0.0.1:8765，自动开浏览器
@@ -31,6 +32,7 @@ import io
 import json
 import os
 import re
+import secrets
 import shutil
 import sys
 import threading
@@ -43,10 +45,12 @@ from pathlib import Path
 from pathlib import PurePosixPath, PureWindowsPath
 from urllib.parse import urlparse, unquote
 
+from collections import OrderedDict
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import analyze  # noqa: E402
+import chat  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
@@ -61,6 +65,8 @@ LIMIT_EXTRACTED_BYTES = 512 * 1024 * 1024
 LIMIT_ARCHIVE_ENTRIES = 50_000
 MAX_REQUEST_BYTES = 256 * 1024
 MAX_TASK_CHARS = 2_000
+MAX_CHAT_CHARS = 1_000
+CHAT_SECONDS = 240
 
 MIME = {".html": "text/html; charset=utf-8", ".js": "application/javascript; charset=utf-8",
         ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8",
@@ -71,6 +77,21 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "RepoOnboard/1.0"})
 SESSION.trust_env = False          # 绕开系统代理，直连
 ANALYZE_LOCK = threading.Lock()    # 避免并发下载/建图争抢资源并覆盖缓存
+CHAT_LOCK = threading.Lock()       # 本地向量模型 / Ollama 单次处理一个问答
+SESSION_GRAPH_LOCK = threading.Lock()
+SESSION_GRAPHS: OrderedDict[str, tuple[str, dict]] = OrderedDict()
+MAX_GRAPH_SESSIONS = 4
+
+
+def remember_graph(repo: str, graph: dict) -> str:
+    """保留最近几个解析会话的结构图，供结果页问答接口读取。"""
+    key = secrets.token_urlsafe(24)
+    with SESSION_GRAPH_LOCK:
+        SESSION_GRAPHS[key] = (repo, graph)
+        SESSION_GRAPHS.move_to_end(key)
+        while len(SESSION_GRAPHS) > MAX_GRAPH_SESSIONS:
+            SESSION_GRAPHS.popitem(last=False)
+    return key
 
 
 class UnsafeArchiveError(ValueError):
@@ -356,19 +377,33 @@ def analyze_url(text: str, task: str | None, refresh: bool = False) -> dict:
 
     CACHE.mkdir(parents=True, exist_ok=True)
     task_hash = hashlib.sha256((task or "").strip().encode("utf-8")).hexdigest()[:16]
-    cache_file = CACHE / f"{slug}__{branch_key}__{task_hash}.json"
+    # 缓存名带 schema 版本：payload 结构变了（加了 qa / path_summary）就必须换名字，
+    # 否则旧缓存会被原样返回，页面上表现为「速答页是空的」。
+    cache_file = CACHE / f"{slug}__{branch_key}__{task_hash}__map-qa-v1.json"
+    graph_cache_file = CACHE / f"{slug}__{branch_key}__graph.json"
     if cache_file.exists() and not refresh:
         try:
             data = json.loads(cache_file.read_text(encoding="utf-8"))
             if isinstance(data, dict):
+                if not isinstance(data.get("qa"), dict):
+                    raise OSError("缓存缺少速答内容，按旧版重新解析")
                 data["_cached"] = True
                 data["_elapsed"] = round(time.time() - t0, 2)
+                try:
+                    graph = json.loads(graph_cache_file.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    graph = analyze.GB.build(dest, with_centrality=True)
+                    graph_tmp = graph_cache_file.with_suffix(".tmp")
+                    graph_tmp.write_text(json.dumps(graph, ensure_ascii=False,
+                                                    separators=(",", ":")), encoding="utf-8")
+                    os.replace(graph_tmp, graph_cache_file)
+                data["_analysis_id"] = remember_graph(repo, graph)
                 return data
         except (OSError, json.JSONDecodeError):
             pass
 
     payload = analyze.payload(dest, repo, slug, task=task)
-    payload.pop("_graph", None)
+    graph = payload.pop("_graph", None)
     payload.pop("label_of", None)
     payload["_source"] = {"host": host, "repo": repo, "branch": used_branch,
                           "py_files": n_files, "py_lines": n_lines}
@@ -379,6 +414,13 @@ def analyze_url(text: str, task: str | None, refresh: bool = False) -> dict:
     tmp_cache.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
                          encoding="utf-8")
     os.replace(tmp_cache, cache_file)
+    if graph is None:
+        raise RuntimeError("解析结果没有包含结构图")
+    graph_tmp = graph_cache_file.with_suffix(".tmp")
+    graph_tmp.write_text(json.dumps(graph, ensure_ascii=False, separators=(",", ":")),
+                         encoding="utf-8")
+    os.replace(graph_tmp, graph_cache_file)
+    payload["_analysis_id"] = remember_graph(repo, graph)
     return payload
 
 
@@ -417,6 +459,8 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- 分析接口 ----------
     def do_POST(self):
         u = urlparse(self.path)
+        if u.path == "/api/chat":
+            return self._do_chat()
         if u.path != "/api/analyze":
             self.send_error(404)
             return
@@ -467,6 +511,62 @@ class Handler(BaseHTTPRequestHandler):
                                         f"建议换小一点的仓库。"}, 504)
         if "err" in holder:
             return self._json({"error": holder["err"]}, 400)
+        return self._json(holder["ok"], 200)
+
+    def _do_chat(self):
+        try:
+            raw_length = self.headers.get("Content-Length")
+            n = int(raw_length) if raw_length is not None else 0
+            if n <= 0:
+                return self._json({"error": "请求体不能为空"}, 400)
+            if n > MAX_REQUEST_BYTES:
+                return self._json({"error": "请求体过大"}, 413)
+            raw_body = self.rfile.read(n)
+            if len(raw_body) != n:
+                return self._json({"error": "请求体未完整接收"}, 400)
+            body = json.loads(raw_body)
+        except (ValueError, RecursionError):
+            return self._json({"error": "请求体不是合法 JSON"}, 400)
+
+        if not isinstance(body, dict):
+            return self._json({"error": "请求内容必须是 JSON 对象"}, 400)
+        analysis_id = body.get("analysis_id", "")
+        question = body.get("question", "")
+        if not isinstance(analysis_id, str) or not isinstance(question, str):
+            return self._json({"error": "analysis_id 和 question 必须是文本"}, 400)
+        question = question.strip()
+        if not question:
+            return self._json({"error": "请先输入一个问题"}, 400)
+        if len(question) > MAX_CHAT_CHARS:
+            return self._json({"error": f"问题不能超过 {MAX_CHAT_CHARS} 个字符"}, 400)
+
+        with SESSION_GRAPH_LOCK:
+            session = SESSION_GRAPHS.get(analysis_id)
+            if session:
+                SESSION_GRAPHS.move_to_end(analysis_id)
+        if not session:
+            return self._json({"error": "解析会话已过期，请重新解析仓库"}, 404)
+        if not CHAT_LOCK.acquire(blocking=False):
+            return self._json({"error": "正在回答另一个问题，请稍后再试"}, 429)
+
+        repo, graph = session
+        holder: dict = {}
+
+        def work():
+            try:
+                holder["ok"] = chat.answer(graph, repo, question)
+            except Exception as exc:
+                holder["err"] = f"问答处理失败：{type(exc).__name__}: {exc}"
+            finally:
+                CHAT_LOCK.release()
+
+        thread = threading.Thread(target=work, daemon=True)
+        thread.start()
+        thread.join(CHAT_SECONDS)
+        if thread.is_alive():
+            return self._json({"error": f"问答超过 {CHAT_SECONDS} 秒，请稍后重试"}, 504)
+        if "err" in holder:
+            return self._json({"error": holder["err"]}, 500)
         return self._json(holder["ok"], 200)
 
     def _json(self, obj, code=200):

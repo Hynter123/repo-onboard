@@ -20,15 +20,20 @@ payload 结构（前端 `app.js` 依赖）：
 
 from __future__ import annotations
 
+import math
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import networkx as nx
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import graph_build as GB  # noqa: E402
+import qa  # noqa: E402
 import rank as R  # noqa: E402
 
 EDGE_TYPES = ("imports", "calls", "inherits", "tests")
+VIEW_EDGE_TYPES = ("imports", "calls", "inherits")
 
 
 # ==========================================================================
@@ -125,8 +130,112 @@ def mindmap_md(graph: dict, name: str, max_files_per_dir: int = 8) -> str:
     return "\n".join(lines)
 
 
+def compact_view_layout(view: list[dict], edges: list[dict]) -> list[dict]:
+    """Use the saved graph layout, then pack disconnected components together."""
+    graph = nx.Graph()
+    graph.add_nodes_from(range(len(view)))
+    file_to_view: dict[str, int] = {}
+    for i, item in enumerate(view):
+        for path in item.get("members", [item.get("representative", "")]):
+            if path:
+                file_to_view[path] = i
+
+    # Tests are useful for task evidence, but their links make the architecture view noisy.
+    for edge in edges:
+        source = file_to_view.get(edge["source"])
+        target = file_to_view.get(edge["target"])
+        if source is None or target is None or source == target:
+            continue
+        weight = sum(int((edge.get("types") or {}).get(kind, 0)) for kind in VIEW_EDGE_TYPES)
+        if weight <= 0:
+            continue
+        left, right = sorted((source, target))
+        if graph.has_edge(left, right):
+            graph[left][right]["weight"] += weight
+        else:
+            graph.add_edge(left, right, weight=weight)
+
+    if not view:
+        return []
+    try:
+        positions = nx.kamada_kawai_layout(graph)
+    except Exception:
+        positions = nx.spring_layout(graph, seed=42, k=1.6, iterations=400, weight="weight")
+
+    # Layout engines can put disconnected components very far apart. Preserve each
+    # component's internal shape, but repack the components around the largest one.
+    components = sorted(
+        nx.connected_components(graph),
+        key=lambda component: (-len(component), min(component)),
+    )
+    if len(components) > 1:
+        packed: dict[int, tuple[float, float]] = {}
+        main = components[0]
+
+        def centered(component: set[int]) -> dict[int, tuple[float, float]]:
+            cx = sum(float(positions[i][0]) for i in component) / len(component)
+            cy = sum(float(positions[i][1]) for i in component) / len(component)
+            return {i: (float(positions[i][0]) - cx, float(positions[i][1]) - cy)
+                    for i in component}
+
+        main_points = centered(main)
+        main_radius = max(
+            (x * x + y * y) ** 0.5 for x, y in main_points.values()
+        ) or 1.0
+        main_scale = 0.42 / main_radius
+        for i, (x, y) in main_points.items():
+            packed[i] = (x * main_scale, y * main_scale)
+
+        satellites = components[1:]
+        for index, component in enumerate(satellites):
+            local = centered(component)
+            radius = max((x * x + y * y) ** 0.5 for x, y in local.values())
+            local_scale = min(1.0, 0.14 / radius) if radius else 1.0
+            ring = index // 8
+            slot = index % 8
+            slots = min(8, len(satellites) - ring * 8)
+            orbit = 0.42 + min(radius * local_scale, 0.14) + 0.08 + ring * 0.12
+            angle = -3.141592653589793 / 2 + 2 * 3.141592653589793 * slot / max(1, slots)
+            cx, cy = orbit * math.cos(angle), orbit * math.sin(angle)
+            for i, (x, y) in local.items():
+                packed[i] = (cx + x * local_scale, cy + y * local_scale)
+
+        extent = max(max(abs(x), abs(y)) for x, y in packed.values()) or 1.0
+        positions = {i: (x / extent, y / extent) for i, (x, y) in packed.items()}
+    else:
+        cx = sum(float(positions[i][0]) for i in range(len(view))) / len(view)
+        cy = sum(float(positions[i][1]) for i in range(len(view))) / len(view)
+        centered_positions = {
+            i: (float(positions[i][0]) - cx, float(positions[i][1]) - cy)
+            for i in range(len(view))
+        }
+        extent = max(max(abs(x), abs(y)) for x, y in centered_positions.values()) or 1.0
+        positions = {i: (x / extent, y / extent) for i, (x, y) in centered_positions.items()}
+
+    return [{"x": float(positions[i][0]), "y": float(positions[i][1])}
+            for i in range(len(view))]
+
+
+def _symbol_names(graph: dict) -> dict[str, list[str]]:
+    """文件 → 出现最多的符号名（按被调用次数倒序），供路径步骤展示。"""
+    rows: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    for n in graph.get("nodes", []):
+        if n.get("type") in ("function", "method", "class"):
+            rel = R.rel_of(n.get("id", ""))
+            if rel:
+                rows[rel].append((int(n.get("metrics", {}).get("in_degree", 0) or 0),
+                                  n.get("label", "")))
+    return {rel: [name for _, name in sorted(items, key=lambda x: (-x[0], x[1]))[:3]]
+            for rel, items in rows.items()}
+
+
 def extract_paths(graph: dict, max_paths: int = 3, max_len: int = 6) -> list[dict]:
-    """抽取「主干路径」：从入口文件沿最强依赖边走 3~6 个文件。"""
+    """抽取「主干路径」：从入口文件沿最强依赖边走 3~6 个文件。
+
+    每条路径除了节点顺序，还带每一步的角色 / 扇入 / 关键符号，
+    以及相邻两步之间靠哪些边连起来（调用、导入还是继承）——
+    这些字段是前端「主干路径」页画流程图的依据，去掉会让页面退化成一行文件名。
+    """
     mods = R.modules(graph)
     pool = {nid for nid in R.candidate_pool(graph)
             if not mods[nid].get("metrics", {}).get("is_vendor")
@@ -135,6 +244,7 @@ def extract_paths(graph: dict, max_paths: int = 3, max_len: int = 6) -> list[dic
     out_edges: dict[str, set[str]] = defaultdict(set)
     weight: Counter = Counter()
     fan_in: Counter = Counter()
+    kinds: dict[tuple[str, str], Counter] = defaultdict(Counter)
     for e in graph["edges"]:
         if e["type"] not in ("imports", "calls", "inherits"):
             continue
@@ -145,6 +255,7 @@ def extract_paths(graph: dict, max_paths: int = 3, max_len: int = 6) -> list[dic
         out_edges[na].add(nb)
         weight[(na, nb)] += 2 if e["type"] == "calls" else 1
         fan_in[nb] += 1
+        kinds[(na, nb)][e["type"]] += 1
 
     ENTRY_HINT = ("__main__", "cli", "main", "app", "runner", "program",
                   "console", "entry", "cmd")
@@ -158,6 +269,26 @@ def extract_paths(graph: dict, max_paths: int = 3, max_len: int = 6) -> list[dic
         return s
 
     cands = sorted(pool, key=entry_score, reverse=True)[:10]
+    symbols = _symbol_names(graph)
+
+    # 「枢纽」按本仓库的扇入分布定，不写死阈值：各仓库规模差太多。
+    # 这里用**去重后的文件数**（metrics.fan_in），而不是两个文件之间有多少条边；
+    # 否则同一份 payload 里「被 26 个文件依赖」和速答页的「被 4 个文件依赖」会互相打脸。
+    fans = {nid: int(mods[nid].get("metrics", {}).get("fan_in", 0) or 0) for nid in pool}
+    fan_values = sorted(fans.values()) or [0]
+    hub_cut = max(4, fan_values[int(len(fan_values) * 0.75)] if len(fan_values) > 3 else 4)
+
+    def role_of(index: int, last: int, nid: str) -> str:
+        fan = fans.get(nid, 0)
+        if index == 0:
+            return "入口"
+        if fan >= hub_cut:
+            return "枢纽"
+        if index == last and fan <= 1:
+            return "叶子"
+        if mods[nid].get("metrics", {}).get("score", 0.0) >= 0.30:
+            return "核心"
+        return "模块"
 
     paths, covered = [], set()
     for start in cands:
@@ -176,14 +307,62 @@ def extract_paths(graph: dict, max_paths: int = 3, max_len: int = 6) -> list[dic
         if len(set(chain) & covered) / len(chain) > 0.5:
             continue
         covered |= set(chain)
+        last = len(chain) - 1
+        steps = []
+        for index, nid in enumerate(chain):
+            node = mods[nid]
+            metrics = node.get("metrics", {})
+            path = node["path"]
+            step = {
+                "path": path,
+                "label": path.rsplit("/", 1)[-1],
+                "role": role_of(index, last, nid),
+                "fan_in": fans.get(nid, 0),
+                "fan_out": len(out_edges.get(nid, ())),
+                "score": round(float(metrics.get("score", 0.0) or 0.0), 4),
+                "symbols": symbols.get(path, [])[:2],
+                "via": None,
+            }
+            if index > 0:
+                counts = kinds.get((chain[index - 1], nid), Counter())
+                step["via"] = {
+                    "calls": int(counts.get("calls", 0)),
+                    "imports": int(counts.get("imports", 0)),
+                    "inherits": int(counts.get("inherits", 0)),
+                    "total": int(sum(counts.values())),
+                }
+            steps.append(step)
+
         entry_base = mods[chain[0]]["path"].rsplit("/", 1)[-1]
         end_base = mods[chain[-1]]["path"].rsplit("/", 1)[-1]
         paths.append({
+            "index": len(paths) + 1,
             "label": f"{entry_base} → {end_base}",
             "entry": mods[chain[0]]["path"],
             "nodes": [mods[n]["path"] for n in chain],
+            "steps": steps,
         })
+
+    # 同一个文件常被多条路径复用——前端要据此提示「这几条路径在这里汇合」
+    for path in paths:
+        for step in path["steps"]:
+            step["in_paths"] = [{"index": other["index"], "label": other["label"]}
+                                for other in paths if step["path"] in other["nodes"]]
     return paths
+
+
+def summarize_paths(paths: list[dict]) -> dict:
+    """主干路径的整体统计（页面顶部那排数字）。"""
+    files: Counter = Counter()
+    for path in paths:
+        for step in path["steps"]:
+            files[step["path"]] += 1
+    return {
+        "paths": len(paths),
+        "files": len(files),
+        "entries": len({p["entry"] for p in paths}),
+        "shared": [{"path": p, "count": c} for p, c in files.most_common() if c > 1],
+    }
 
 
 # ==========================================================================
@@ -221,8 +400,11 @@ def payload_from_graph(graph: dict, name: str, slug: str | None = None,
         "view": [{"cluster": v["cluster"], "count": v["file_count"],
                   "rep": v["representative"], "score": v.get("score", 0),
                   "members": v.get("members", [])} for v in view],
+        "view_layout": compact_view_layout(view, edges),
         "mindmap": mindmap_md(graph, name),
         "paths": paths,
+        "path_summary": summarize_paths(paths),
+        "qa": qa.build(graph, nodes, edges, paths, stats),
         "label_of": label_of,
         "tasks": [],
     }

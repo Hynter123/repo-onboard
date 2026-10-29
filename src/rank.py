@@ -247,6 +247,13 @@ def translate_query(query: str) -> str | None:
 
     try:
         import requests
+        # Ollama 不在运行或未安装模型时尽快退回英文/结构检索，避免每个中文问题都等满 120 秒。
+        tags_response = requests.get("http://127.0.0.1:11434/api/tags", timeout=3)
+        if tags_response.status_code != 200:
+            return None
+        tags = [m.get("name", "") for m in tags_response.json().get("models", [])]
+        if not any(tag.startswith(TRANS_MODEL.split(":")[0]) for tag in tags):
+            return None
         prompt = (
             "Translate the following software issue description into concise English "
             "for searching source code. Output ONLY the translation, one line, "

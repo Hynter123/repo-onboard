@@ -23,8 +23,6 @@
         <input v-model="homeUrl" class="big-input" spellcheck="false"
                placeholder="https://github.com/owner/repo　或　https://gitee.com/owner/repo"
                @keyup.enter="startAnalyze">
-        <input v-model="homeTask" class="task-input" spellcheck="false"
-               placeholder="（可选）一句话任务，例如：为什么异步环境下日志会丢失？">
         <button class="go" :disabled="stage === 'loading' || !homeUrl.trim()" @click="startAnalyze">
           {{ stage === 'loading' ? '解析中…' : '开始解析' }}
         </button>
@@ -80,7 +78,7 @@
                   @click="switchTab(t.key)">{{ t.label }}</button>
         </div>
 
-        <input v-if="tab === 'task'" v-model="q" class="search" placeholder="搜索文件…（如 logger）">
+        <input v-if="tab === 'graph'" v-model="q" class="search" placeholder="搜索文件…（如 logger）">
       </div>
     </header>
 
@@ -94,34 +92,85 @@
         <svg id="mm" width="100%" height="100%"></svg>
       </section>
 
+      <section v-show="tab === 'graph'" class="panel">
+        <div class="panel-head graph-head">
+          <span>依赖结构图</span>
+          <span class="hint">圆点代表文件，连线代表文件依赖；点击节点查看详情</span>
+          <div class="graph-mode" role="group" aria-label="结构图显示范围">
+            <button type="button" :class="{ active: graphMode === 'compact' }" @click="setGraphMode('compact')">精简视图</button>
+            <button type="button" :class="{ active: graphMode === 'all' }" @click="setGraphMode('all')">全部文件</button>
+          </div>
+          <span class="graph-count">{{ graphNodeCount }} 个节点 · {{ graphEdgeCount }} 条连线</span>
+        </div>
+        <div id="g6graph" class="canvas"></div>
+      </section>
+
       <section v-show="tab === 'paths'" class="panel">
         <div class="panel-head">
           <span>主干路径</span>
           <span class="hint">
-            从入口文件沿最强依赖边走出的关键链路（每条 3–6 个文件）；
-            鼠标划过右侧文件列表会高亮它在各路径中的位置
+            从入口沿最强依赖边走出的阅读顺序；每一步标注角色、被依赖数和关键符号，
+            点任意一步可在右侧看它的结构指标
+          </span>
+          <span class="graph-count" v-if="pathSummary.paths">
+            {{ pathSummary.paths }} 条 · {{ pathSummary.files }} 个文件
           </span>
         </div>
         <div class="paths">
           <div v-if="!paths.length" class="empty">这个仓库未抽出明显的主干路径</div>
-          <div v-for="(p, i) in paths" :key="i" class="pathcard">
-            <div class="phead">
-              <span class="pnum">{{ i + 1 }}</span>
-              <span class="plabel">{{ p.label }}</span>
-              <span class="pcount">{{ p.nodes.length }} 个文件</span>
-            </div>
-            <div class="chain">
-              <template v-for="(f, j) in p.nodes">
-                <span :key="'c' + j" class="chip"
-                      :class="{ hot: hoverPath && hoverPath === f }"
-                      :title="f" @click="selectPath(f)">{{ p.labels[j] }}</span>
-                <span :key="'a' + j" v-if="j < p.nodes.length - 1" class="arrow">→</span>
-              </template>
-            </div>
+
+          <div class="pstats" v-if="paths.length > 1">
+            <div class="pstat"><b>{{ pathSummary.paths }}</b><span>条主干路径</span></div>
+            <div class="pstat"><b>{{ pathSummary.files }}</b><span>个文件被覆盖</span></div>
+            <div class="pstat"><b>{{ pathSummary.entries }}</b><span>个互不相同的入口</span></div>
+            <div class="pstat"><b>{{ sharedCount }}</b><span>个文件被多条路径复用</span></div>
           </div>
+
+          <div class="pflow">
+            <article v-for="p in paths" :key="p.index" class="pathcard">
+              <header class="phead">
+                <span class="pnum">{{ p.index }}</span>
+                <div class="ptitle-wrap">
+                  <div class="ptitle">{{ p.label }}</div>
+                  <div class="psub">起点 {{ p.entry }}</div>
+                </div>
+                <span class="pcount">{{ p.steps.length }} 步</span>
+              </header>
+
+              <ol class="steps">
+                <li v-for="(s, j) in p.steps" :key="s.path"
+                    :class="['step', { hot: hoverPath === s.path }]"
+                    @mouseenter="hoverFile(s.path)" @mouseleave="leaveFile"
+                    @click="selectPath(s.path)">
+                  <div class="steprail">
+                    <span :class="['stepdot', 'role-' + roleClass(s.role)]">{{ j + 1 }}</span>
+                    <span class="stepline" v-if="j < p.steps.length - 1"></span>
+                  </div>
+                  <div class="stepbody">
+                    <div class="steplink" v-if="s.via">↓ {{ viaText(s.via) }}</div>
+                    <div class="stephead">
+                      <code class="steppath">{{ s.path }}</code>
+                      <span :class="['role', 'role-' + roleClass(s.role)]">{{ s.role }}</span>
+                      <span class="shared" v-if="s.in_paths && s.in_paths.length > 1"
+                            :title="'同时出现在：' + s.in_paths.map(function(x){return '第' + x.index + '条'}).join('、')">
+                        多路径复用
+                      </span>
+                    </div>
+                    <div class="stepmeta">
+                      被 {{ s.fan_in }} 个文件依赖 · 扇出 {{ s.fan_out }} ·
+                      结构分 {{ fmt3(s.score) }}<template v-if="s.symbols && s.symbols.length"> ·
+                      {{ s.symbols.join('、') }}</template>
+                    </div>
+                  </div>
+                </li>
+              </ol>
+            </article>
+          </div>
+
           <p class="footnote" v-if="paths.length">
-            路径由程序自动抽取（优先“调用”边、对工具枢纽降权），目的不是穷举依赖，
-            而是给出<b>几条能读得完的阅读顺序</b>。
+            路径由程序自动抽取：优先走「调用」边，对 <code>utils</code> / <code>_compat</code>
+            这类被大量文件依赖的工具枢纽按 0.45 折扣，避免每条路径都拐进去然后断掉。
+            目的不是穷举依赖，而是给出<b>几条能读完的阅读顺序</b>。
           </p>
         </div>
       </section>
@@ -145,16 +194,121 @@
         <div id="g6task" class="canvas"></div>
       </section>
 
-      <aside class="side">
+      <section v-show="tab === 'qa'" class="panel qa-panel">
+        <div class="panel-head">
+          <span>仓库速答</span>
+          <span class="hint">问题都是能算准的：回答由 AST 结构事实算出，每个数字都能在结构图里核对</span>
+        </div>
+
+        <div class="qa-wrap" v-if="qaQuestions.length">
+          <aside class="qa-menu">
+            <div v-for="g in qaGroups" :key="g.key" class="qa-group">
+              <h4>{{ g.title }}</h4>
+              <button v-for="q in qaByGroup(g.key)" :key="q.id"
+                      :class="['qa-item', { active: curQa && curQa.id === q.id }]"
+                      @click="pickQuestion(q.id)">
+                <span class="qa-item-title">{{ q.title }}</span>
+                <span class="qa-item-desc">{{ q.desc }}</span>
+              </button>
+            </div>
+          </aside>
+
+          <div class="qa-body" v-if="curQa">
+            <div class="qa-qhead">
+              <h3>{{ curQa.title }}</h3>
+              <p>{{ curQa.desc }}</p>
+            </div>
+
+            <div class="qa-variants" v-if="curQa.variants && curQa.variants.length">
+              <label>看哪个文件：</label>
+              <select v-model="qaVariantKey">
+                <option v-for="v in curQa.variants" :key="v.key" :value="v.key">{{ v.key }}</option>
+              </select>
+            </div>
+
+            <p class="qa-answer" v-html="qaAnswerHtml"></p>
+
+            <ul class="qa-bullets" v-if="qaBullets.length">
+              <li v-for="(b, i) in qaBullets" :key="i">{{ b }}</li>
+            </ul>
+
+            <div class="qa-files" v-if="qaFiles.length">
+              <h4>证据文件 <small>点一下看它的结构指标</small></h4>
+              <div v-for="f in qaFiles" :key="f.path"
+                   :class="['qa-file', { open: qaOpenPath === f.path }]"
+                   @click="toggleQaFile(f.path)">
+                <code>{{ f.path }}</code>
+                <span>{{ f.reason }}</span>
+                <div class="qa-file-detail" v-if="qaOpenPath === f.path && qaOpenNode">
+                  <div>类型 {{ typeLabel(qaOpenNode) }} · 被 {{ qaOpenNode.fan_in }} 个文件依赖 ·
+                       结构分 {{ fmt3(qaOpenNode.score) }} · PageRank {{ fmt4(qaOpenNode.pagerank) }}</div>
+                  <div v-if="qaOpenNode.symbols && qaOpenNode.symbols.length">
+                    关键符号：{{ qaOpenNode.symbols.map(function (s) { return s.name }).join('、') }}
+                  </div>
+                  <button type="button" @click.stop="focusFile(f.path)">在依赖图里定位</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="qa-task" v-if="curQa.kind === 'task'">
+              <div class="qa-task-form">
+                <input v-model="taskText" maxlength="1000"
+                       placeholder="例如：异步环境下日志丢失；配置项优先级不对；补一个 CLI 参数"
+                       @keyup.enter="runTask">
+                <button @click="runTask" :disabled="taskBusy || !taskText.trim()">
+                  {{ taskBusy ? '检索中…' : '找文件' }}
+                </button>
+              </div>
+              <div class="qa-note" v-if="taskError">{{ taskError }}</div>
+
+              <div class="qa-samples" v-if="repoTasks.length">
+                <span>示例仓库内置的真实 issue（可直接对比标准答案）：</span>
+                <button v-for="t in repoTasks" :key="t.id" @click="showTask(t)">
+                  {{ t.issue_title.slice(0, 34) }}
+                </button>
+              </div>
+
+              <div class="qa-task-result" v-if="taskResult">
+                <div class="qa-task-title">{{ taskResult.title }}</div>
+                <div v-for="f in taskResult.files" :key="f.path"
+                     :class="['qa-file', { hit: f.reason && f.reason.indexOf('命中') === 0 }]"
+                     @click="focusFile(f.path)">
+                  <code>{{ f.path }}</code>
+                  <span>{{ f.reason }}</span>
+                </div>
+                <div class="qa-note" v-if="taskResult.note">{{ taskResult.note }}</div>
+              </div>
+            </div>
+
+            <p class="qa-foot" v-if="current && current.qa && current.qa.note">
+              {{ current.qa.note }}
+            </p>
+          </div>
+        </div>
+
+        <div v-else class="empty">这份数据是旧版生成的，没有速答内容。请重新运行 python src/build_web.py</div>
+      </section>
+
+      <aside v-show="tab !== 'qa'" class="side">
         <template v-if="sel">
           <h3 class="side-title">{{ sel.label }}</h3>
           <div class="path">{{ sel.id }}</div>
           <dl class="kv">
             <dt>类型</dt><dd>{{ typeLabel(sel) }}</dd>
-            <dt>结构得分</dt><dd>{{ sel.score.toFixed(3) }}</dd>
-            <dt>被依赖</dt><dd>{{ sel.fan_in }} 个文件</dd>
-            <dt>PageRank</dt><dd>{{ sel.pagerank.toFixed(3) }}</dd>
+            <template v-if="sel._aggregateCount">
+              <dt>聚合文件</dt><dd>{{ sel._aggregateCount }} 个</dd>
+              <dt>代表文件</dt><dd class="kv-path">{{ sel._representative }}</dd>
+            </template>
+            <template v-else>
+              <dt>结构得分</dt><dd>{{ sel.score.toFixed(3) }}</dd>
+              <dt>被依赖</dt><dd>{{ sel.fan_in }} 个文件</dd>
+              <dt>PageRank</dt><dd>{{ sel.pagerank.toFixed(3) }}</dd>
+            </template>
           </dl>
+          <div v-if="sel._aggregateMembers && sel._aggregateMembers.length" class="block">
+            <h4>包含文件（最多显示 10 个）</h4>
+            <div v-for="file in sel._aggregateMembers" :key="file" class="row"><code>{{ file }}</code></div>
+          </div>
           <div v-if="sel.symbols && sel.symbols.length" class="block">
             <h4>关键符号</h4>
             <div v-for="s in sel.symbols" :key="s.name" class="sym">
@@ -190,17 +344,29 @@
 
         <template v-else>
           <h3 class="side-title">读法</h3>
-          <p class="hint">
+          <p v-if="tab === 'graph'" class="hint">
+            <b>精简视图</b>展示重要文件并聚合测试、第三方和辅助文件；<br>
+            <b>全部文件</b>展开仓库的文件节点与依赖连线。<br>
+            可拖动节点、缩放画布，也可用上方搜索定位文件。
+          </p>
+          <p v-else class="hint">
+            <b>依赖图</b> 看文件节点之间的关系；<br>
             <b>思维导图</b> 看这个仓库分成哪几块；<br>
             <b>主干路径</b> 看几条关键链路该按什么顺序读；<br>
-            <b>任务定位</b> 输入一句话任务，看工具推荐哪几个文件。
+            <b>问答</b> 根据已解析结构提问。
           </p>
           <dl class="kv" v-if="data">
             <dt>文件数</dt><dd>{{ data.nodes.length }}</dd>
             <dt>依赖边</dt><dd>{{ data.edges.length }}</dd>
             <dt>默认视图</dt><dd>{{ data.view.length }} 节点</dd>
           </dl>
-          <div class="legend">
+          <div v-if="tab === 'graph'" class="legend">
+            <div><span class="dot dot-rec"></span> 核心源码</div>
+            <div><span class="dot dot-test"></span> 测试文件</div>
+            <div><span class="dot dot-vendor"></span> 内嵌第三方</div>
+            <div><span class="dot dot-aux"></span> 辅助文件</div>
+          </div>
+          <div v-else class="legend">
             <div><span class="dot dot-rec"></span> 推荐 / 核心</div>
             <div><span class="dot dot-gt"></span> 真实答案</div>
             <div><span class="dot dot-test"></span> 测试</div>

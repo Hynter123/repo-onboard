@@ -1,0 +1,1035 @@
+{
+  "schema_version": 1,
+  "scope": "Verified Markmap 0.18.12 browser bundles with production dependency closure from the upstream lockfile, plus official AntV G6 4.8.23 browser bundle with its source-mapped package closure. Each asset inventory is scoped to bundled runtime components and excludes unrelated development dependencies.",
+  "evidence": {
+    "markmap_lib": {
+      "version": "0.18.12",
+      "file": "web/vendor/markmap-lib.js",
+      "upstream": "https://unpkg.com/markmap-lib@0.18.12/dist/browser/index.iife.js",
+      "sha256": "edfe321a3fe46e9c0f0af8370145aee180975f243f2242f0f8181ac4273e08e1"
+    },
+    "markmap_view": {
+      "version": "0.18.12",
+      "file": "web/vendor/markmap-view.js",
+      "upstream": "https://unpkg.com/markmap-view@0.18.12/dist/browser/index.js",
+      "sha256": "861eb6d20af18aaa300878d46d695722a73625c58b40f49236af027f18b74e07"
+    },
+    "lockfile": {
+      "git_head": "205367a24603dc187f67da1658940c6cade20dce",
+      "url": "https://github.com/markmap/markmap/blob/205367a24603dc187f67da1658940c6cade20dce/pnpm-lock.yaml"
+    },
+    "resolution_method": "Both local browser bundles were compared byte-for-byte against the versioned upstream files. Production dependency versions were resolved from the pnpm lockfile at markmap-lib 0.18.12 gitHead; each package license was checked against npm registry metadata. jsx-dom also has a differing MIT text in the published LICENSE file; both declarations are recorded."
+  },
+  "component_count": 81,
+  "license_counts": {
+    "MIT": 33,
+    "ISC (npm metadata and embedded banner); MIT (published LICENSE file)": 1,
+    "Python-2.0": 1,
+    "ISC": 34,
+    "BSD-2-Clause": 8,
+    "BSD-3-Clause": 3,
+    "Unlicense": 1
+  },
+  "components": [
+    {
+      "name": "@babel/runtime",
+      "version": "7.26.0",
+      "license": "MIT",
+      "upstream": "https://github.com/babel/babel.git",
+      "npm_metadata_url": "https://registry.npmjs.org/%40babel%2Fruntime/7.26.0",
+      "npm_author_metadata": "The Babel Team (https://babel.dev/team)"
+    },
+    {
+      "name": "@gera2ld/jsx-dom",
+      "version": "2.2.2",
+      "license": "ISC (npm metadata and embedded banner); MIT (published LICENSE file)",
+      "upstream": "git+ssh://git@github.com/gera2ld/jsx-dom.git",
+      "npm_metadata_url": "https://registry.npmjs.org/%40gera2ld%2Fjsx-dom/2.2.2",
+      "license_conflict": true,
+      "license_evidence": [
+        "https://registry.npmjs.org/@gera2ld%2fjsx-dom/2.2.2",
+        "https://unpkg.com/@gera2ld/jsx-dom@2.2.2/LICENSE"
+      ],
+      "npm_author_metadata": "Gerald"
+    },
+    {
+      "name": "@vscode/markdown-it-katex",
+      "version": "1.1.1",
+      "license": "MIT",
+      "upstream": "https://github.com/microsoft/vscode-markdown-it-katex.git",
+      "npm_metadata_url": "https://registry.npmjs.org/%40vscode%2Fmarkdown-it-katex/1.1.1",
+      "npm_author_metadata": "Microsoft Corporation"
+    },
+    {
+      "name": "argparse",
+      "version": "2.0.1",
+      "license": "Python-2.0",
+      "upstream": "git+https://github.com/nodeca/argparse.git",
+      "npm_metadata_url": "https://registry.npmjs.org/argparse/2.0.1",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "boolbase",
+      "version": "1.0.0",
+      "license": "ISC",
+      "upstream": "https://github.com/fb55/boolbase",
+      "npm_metadata_url": "https://registry.npmjs.org/boolbase/1.0.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "cheerio",
+      "version": "1.0.0",
+      "license": "MIT",
+      "upstream": "git://github.com/cheeriojs/cheerio.git",
+      "npm_metadata_url": "https://registry.npmjs.org/cheerio/1.0.0",
+      "npm_author_metadata": "Matt Mueller"
+    },
+    {
+      "name": "cheerio-select",
+      "version": "2.1.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/cheeriojs/cheerio-select.git",
+      "npm_metadata_url": "https://registry.npmjs.org/cheerio-select/2.1.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "commander",
+      "version": "7.2.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/tj/commander.js.git",
+      "npm_metadata_url": "https://registry.npmjs.org/commander/7.2.0",
+      "npm_author_metadata": "TJ Holowaychuk"
+    },
+    {
+      "name": "commander",
+      "version": "8.3.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/tj/commander.js.git",
+      "npm_metadata_url": "https://registry.npmjs.org/commander/8.3.0",
+      "npm_author_metadata": "TJ Holowaychuk"
+    },
+    {
+      "name": "css-select",
+      "version": "5.1.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/fb55/css-select.git",
+      "npm_metadata_url": "https://registry.npmjs.org/css-select/5.1.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "css-what",
+      "version": "6.1.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git+https://github.com/fb55/css-what.git",
+      "npm_metadata_url": "https://registry.npmjs.org/css-what/6.1.0",
+      "npm_author_metadata": "Felix Böhm"
+    },
+    {
+      "name": "d3",
+      "version": "7.9.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3/7.9.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-array",
+      "version": "3.2.4",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-array.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-array/3.2.4",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-axis",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-axis.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-axis/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-brush",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-brush.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-brush/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-chord",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-chord.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-chord/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-color",
+      "version": "3.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-color.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-color/3.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-contour",
+      "version": "4.0.2",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-contour.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-contour/4.0.2",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-delaunay",
+      "version": "6.0.4",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-delaunay.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-delaunay/6.0.4",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-dispatch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-dispatch.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-dispatch/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-drag",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-drag.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-drag/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-dsv",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-dsv.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-dsv/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-ease",
+      "version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "upstream": "git+https://github.com/d3/d3-ease.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-ease/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-fetch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-fetch.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-fetch/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-force",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-force.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-force/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-format",
+      "version": "3.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-format.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-format/3.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-geo",
+      "version": "3.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-geo.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-geo/3.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-hierarchy",
+      "version": "3.1.2",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-hierarchy.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-hierarchy/3.1.2",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-interpolate",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-interpolate.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-interpolate/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-path",
+      "version": "3.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-path.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-path/3.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-polygon",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-polygon.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-polygon/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-quadtree",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-quadtree.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-quadtree/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-random",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-random.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-random/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-scale",
+      "version": "4.0.2",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-scale.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-scale/4.0.2",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-scale-chromatic",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-scale-chromatic.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-scale-chromatic/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-selection",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-selection.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-selection/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-shape",
+      "version": "3.2.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-shape.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-shape/3.2.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-time",
+      "version": "3.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-time.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-time/3.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-time-format",
+      "version": "4.1.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-time-format.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-time-format/4.1.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-timer.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-timer/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-transition",
+      "version": "3.0.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-transition.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-transition/3.0.1",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "d3-zoom",
+      "version": "3.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/d3/d3-zoom.git",
+      "npm_metadata_url": "https://registry.npmjs.org/d3-zoom/3.0.0",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "delaunator",
+      "version": "5.0.0",
+      "license": "ISC",
+      "upstream": "git+https://github.com/mapbox/delaunator.git",
+      "npm_metadata_url": "https://registry.npmjs.org/delaunator/5.0.0",
+      "npm_author_metadata": "Vladimir Agafonkin"
+    },
+    {
+      "name": "dom-serializer",
+      "version": "2.0.0",
+      "license": "MIT",
+      "upstream": "git://github.com/cheeriojs/dom-serializer.git",
+      "npm_metadata_url": "https://registry.npmjs.org/dom-serializer/2.0.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "domelementtype",
+      "version": "2.3.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/fb55/domelementtype.git",
+      "npm_metadata_url": "https://registry.npmjs.org/domelementtype/2.3.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "domhandler",
+      "version": "5.0.3",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/fb55/domhandler.git",
+      "npm_metadata_url": "https://registry.npmjs.org/domhandler/5.0.3",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "domutils",
+      "version": "3.1.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/fb55/domutils.git",
+      "npm_metadata_url": "https://registry.npmjs.org/domutils/3.1.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "encoding-sniffer",
+      "version": "0.2.0",
+      "license": "MIT",
+      "upstream": "git://github.com/fb55/encoding-sniffer.git",
+      "npm_metadata_url": "https://registry.npmjs.org/encoding-sniffer/0.2.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "entities",
+      "version": "4.5.0",
+      "license": "BSD-2-Clause",
+      "upstream": "git://github.com/fb55/entities.git",
+      "npm_metadata_url": "https://registry.npmjs.org/entities/4.5.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "highlight.js",
+      "version": "11.11.1",
+      "license": "BSD-3-Clause",
+      "upstream": "git://github.com/highlightjs/highlight.js.git",
+      "npm_metadata_url": "https://registry.npmjs.org/highlight.js/11.11.1",
+      "npm_author_metadata": "Josh Goebel"
+    },
+    {
+      "name": "htmlparser2",
+      "version": "9.1.0",
+      "license": "MIT",
+      "upstream": "git://github.com/fb55/htmlparser2.git",
+      "npm_metadata_url": "https://registry.npmjs.org/htmlparser2/9.1.0",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "iconv-lite",
+      "version": "0.6.3",
+      "license": "MIT",
+      "upstream": "git://github.com/ashtuchkin/iconv-lite.git",
+      "npm_metadata_url": "https://registry.npmjs.org/iconv-lite/0.6.3",
+      "npm_author_metadata": "Alexander Shtuchkin"
+    },
+    {
+      "name": "internmap",
+      "version": "2.0.3",
+      "license": "ISC",
+      "upstream": "git+https://github.com/mbostock/internmap.git",
+      "npm_metadata_url": "https://registry.npmjs.org/internmap/2.0.3",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "katex",
+      "version": "0.16.18",
+      "license": "MIT",
+      "upstream": "git+https://github.com/KaTeX/KaTeX.git",
+      "npm_metadata_url": "https://registry.npmjs.org/katex/0.16.18",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "linkify-it",
+      "version": "5.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/linkify-it.git",
+      "npm_metadata_url": "https://registry.npmjs.org/linkify-it/5.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markdown-it",
+      "version": "14.1.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/markdown-it.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markdown-it/14.1.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markdown-it-ins",
+      "version": "4.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/markdown-it-ins.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markdown-it-ins/4.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markdown-it-mark",
+      "version": "4.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/markdown-it-mark.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markdown-it-mark/4.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markdown-it-sub",
+      "version": "2.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/markdown-it-sub.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markdown-it-sub/2.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markdown-it-sup",
+      "version": "2.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/markdown-it-sup.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markdown-it-sup/2.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markmap-common",
+      "version": "0.18.9",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markmap/markmap.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markmap-common/0.18.9",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "markmap-html-parser",
+      "version": "0.18.11",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markmap/markmap.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markmap-html-parser/0.18.11",
+      "npm_author_metadata": "Gerald <gera2ld@live.com>"
+    },
+    {
+      "name": "markmap-lib",
+      "version": "0.18.12",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markmap/markmap.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markmap-lib/0.18.12",
+      "npm_author_metadata": "Gerald <gera2ld@live.com>"
+    },
+    {
+      "name": "markmap-view",
+      "version": "0.18.12",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markmap/markmap.git",
+      "npm_metadata_url": "https://registry.npmjs.org/markmap-view/0.18.12",
+      "npm_author_metadata": "Gerald <gera2ld@live.com>"
+    },
+    {
+      "name": "mdurl",
+      "version": "2.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/mdurl.git",
+      "npm_metadata_url": "https://registry.npmjs.org/mdurl/2.0.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "npm2url",
+      "version": "0.2.4",
+      "license": "MIT",
+      "upstream": "git+https://github.com/gera2ld/npm2url.git",
+      "npm_metadata_url": "https://registry.npmjs.org/npm2url/0.2.4",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "nth-check",
+      "version": "2.1.1",
+      "license": "BSD-2-Clause",
+      "upstream": "git+https://github.com/fb55/nth-check.git",
+      "npm_metadata_url": "https://registry.npmjs.org/nth-check/2.1.1",
+      "npm_author_metadata": "Felix Boehm"
+    },
+    {
+      "name": "parse5",
+      "version": "7.1.2",
+      "license": "MIT",
+      "upstream": "git://github.com/inikulin/parse5.git",
+      "npm_metadata_url": "https://registry.npmjs.org/parse5/7.1.2",
+      "npm_author_metadata": "Ivan Nikulin"
+    },
+    {
+      "name": "parse5-htmlparser2-tree-adapter",
+      "version": "7.0.0",
+      "license": "MIT",
+      "upstream": "git://github.com/inikulin/parse5.git",
+      "npm_metadata_url": "https://registry.npmjs.org/parse5-htmlparser2-tree-adapter/7.0.0",
+      "npm_author_metadata": "Ivan Nikulin"
+    },
+    {
+      "name": "parse5-parser-stream",
+      "version": "7.1.2",
+      "license": "MIT",
+      "upstream": "git://github.com/inikulin/parse5.git",
+      "npm_metadata_url": "https://registry.npmjs.org/parse5-parser-stream/7.1.2",
+      "npm_author_metadata": "Ivan Nikulin"
+    },
+    {
+      "name": "prismjs",
+      "version": "1.29.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/PrismJS/prism.git",
+      "npm_metadata_url": "https://registry.npmjs.org/prismjs/1.29.0",
+      "npm_author_metadata": "Lea Verou"
+    },
+    {
+      "name": "punycode.js",
+      "version": "2.3.1",
+      "license": "MIT",
+      "upstream": "git+https://github.com/mathiasbynens/punycode.js.git",
+      "npm_metadata_url": "https://registry.npmjs.org/punycode.js/2.3.1",
+      "npm_author_metadata": "Mathias Bynens"
+    },
+    {
+      "name": "regenerator-runtime",
+      "version": "0.14.1",
+      "license": "MIT",
+      "upstream": "git+https://github.com/facebook/regenerator.git#main",
+      "npm_metadata_url": "https://registry.npmjs.org/regenerator-runtime/0.14.1",
+      "npm_author_metadata": "Ben Newman"
+    },
+    {
+      "name": "robust-predicates",
+      "version": "3.0.2",
+      "license": "Unlicense",
+      "upstream": "git+https://github.com/mourner/robust-predicates.git",
+      "npm_metadata_url": "https://registry.npmjs.org/robust-predicates/3.0.2",
+      "npm_author_metadata": "Vladimir Agafonkin"
+    },
+    {
+      "name": "rw",
+      "version": "1.3.3",
+      "license": "BSD-3-Clause",
+      "upstream": "git+ssh://git@github.com/mbostock/rw.git",
+      "npm_metadata_url": "https://registry.npmjs.org/rw/1.3.3",
+      "npm_author_metadata": "Mike Bostock"
+    },
+    {
+      "name": "safer-buffer",
+      "version": "2.1.2",
+      "license": "MIT",
+      "upstream": "git+https://github.com/ChALkeR/safer-buffer.git",
+      "npm_metadata_url": "https://registry.npmjs.org/safer-buffer/2.1.2",
+      "npm_author_metadata": "Nikita Skovoroda"
+    },
+    {
+      "name": "uc.micro",
+      "version": "2.1.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/markdown-it/uc.micro.git",
+      "npm_metadata_url": "https://registry.npmjs.org/uc.micro/2.1.0",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "undici",
+      "version": "6.19.8",
+      "license": "MIT",
+      "upstream": "git+https://github.com/nodejs/undici.git",
+      "npm_metadata_url": "https://registry.npmjs.org/undici/6.19.8",
+      "npm_author_metadata": null
+    },
+    {
+      "name": "whatwg-encoding",
+      "version": "3.1.1",
+      "license": "MIT",
+      "upstream": "git+https://github.com/jsdom/whatwg-encoding.git",
+      "npm_metadata_url": "https://registry.npmjs.org/whatwg-encoding/3.1.1",
+      "npm_author_metadata": "Domenic Denicola"
+    },
+    {
+      "name": "whatwg-mimetype",
+      "version": "4.0.0",
+      "license": "MIT",
+      "upstream": "git+https://github.com/jsdom/whatwg-mimetype.git",
+      "npm_metadata_url": "https://registry.npmjs.org/whatwg-mimetype/4.0.0",
+      "npm_author_metadata": "Domenic Denicola"
+    },
+    {
+      "name": "yaml",
+      "version": "2.6.1",
+      "license": "ISC",
+      "upstream": "git+https://github.com/eemeli/yaml.git",
+      "npm_metadata_url": "https://registry.npmjs.org/yaml/2.6.1",
+      "npm_author_metadata": "Eemeli Aro"
+    }
+  ],
+  "method_note": "author values are copied from npm package metadata and are not independently asserted as copyright notices; exact package versions, license identifiers, registry records, and upstream repository URLs are supplied for verification.",
+  "antv_g6": {
+    "version": "4.8.23",
+    "file": "web/vendor/g6.min.js",
+    "upstream": "https://gw.alipayobjects.com/os/lib/antv/g6/4.8.23/dist/g6.min.js",
+    "npm_package": "https://registry.npmjs.org/@antv/g6/-/g6-4.8.23.tgz",
+    "sha256": "8d7970f971daff8727b16cd50890eaed94135a60a5600b7be7918c1031bff4c4",
+    "source_commit": "154d2aa5f4f990c4a757fcc96880470d9ecd2940",
+    "source_map": {
+      "file": "web/vendor/g6.min.js.map",
+      "upstream": "https://gw.alipayobjects.com/os/lib/antv/g6/4.8.23/dist/g6.min.js.map",
+      "sha256": "103aef95600b00465e574870c66380be87f0bccd514ff4605c632b6ae81c0e0d",
+      "source_count": 1265,
+      "node_modules_source_count": 744,
+      "source_mapped_component_count": 39
+    },
+    "resolution_method": "The staged G6 file was replaced with the official 4.8.23 CDN/NPM dist asset and SHA-256 verified. The adjacent upstream source map was retained and parsed: package/version paths identify the bundled runtime modules; dagre and graphlib versions were confirmed from their mapped version.js contents. License identifiers, repositories, and authors were checked against exact-version npm registry metadata. This inventory covers the packages represented in the shipped bundle source map, not development-only dependencies.",
+    "component_count": 40,
+    "license_counts": {
+      "MIT": 29,
+      "ISC": 3,
+      "BSD-3-Clause": 6,
+      "0BSD": 2
+    },
+    "components": [
+      {
+        "name": "@ant-design/colors",
+        "version": "4.0.5",
+        "license": "MIT",
+        "upstream": "git+https://github.com/ant-design/ant-design-colors.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40ant-design%2fcolors/4.0.5",
+        "npm_author_metadata": "afc163"
+      },
+      {
+        "name": "@antv/algorithm",
+        "version": "0.1.26",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/algorithm.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2falgorithm/0.1.26",
+        "npm_author_metadata": "https://github.com/orgs/antvis/people"
+      },
+      {
+        "name": "@antv/g6",
+        "version": "4.8.23",
+        "license": "MIT",
+        "upstream": "https://github.com/antvis/G6",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2Fg6/4.8.23",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "@antv/g6-core",
+        "version": "0.8.23",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/g6.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2fg6-core/0.8.23",
+        "npm_author_metadata": "https://github.com/orgs/antvis/people"
+      },
+      {
+        "name": "@antv/g6-element",
+        "version": "0.8.23",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/g6.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2fg6-element/0.8.23",
+        "npm_author_metadata": "https://github.com/orgs/antvis/people"
+      },
+      {
+        "name": "@antv/g6-pc",
+        "version": "0.8.23",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/g6.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2fg6-pc/0.8.23",
+        "npm_author_metadata": "https://github.com/orgs/antvis/people"
+      },
+      {
+        "name": "@antv/g6-plugin",
+        "version": "0.8.23",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/G6.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2fg6-plugin/0.8.23",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "@antv/graphlib",
+        "version": "1.2.0",
+        "license": "MIT",
+        "upstream": "git+https://github.com/antvis/graphlib.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2fgraphlib/1.2.0",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "@antv/util",
+        "version": "2.0.17",
+        "license": "ISC",
+        "upstream": "git+https://github.com/antvis/util.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40antv%2futil/2.0.17",
+        "npm_author_metadata": "https://github.com/orgs/antvis/people"
+      },
+      {
+        "name": "@babel/runtime",
+        "version": "7.23.1",
+        "license": "MIT",
+        "upstream": "https://github.com/babel/babel.git",
+        "npm_metadata_url": "https://registry.npmjs.org/%40babel%2fruntime/7.23.1",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "color",
+        "version": "3.2.1",
+        "license": "MIT",
+        "upstream": "git+https://github.com/Qix-/color.git",
+        "npm_metadata_url": "https://registry.npmjs.org/color/3.2.1",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "color-convert",
+        "version": "1.9.3",
+        "license": "MIT",
+        "upstream": "git+https://github.com/Qix-/color-convert.git",
+        "npm_metadata_url": "https://registry.npmjs.org/color-convert/1.9.3",
+        "npm_author_metadata": "Heather Arthur"
+      },
+      {
+        "name": "color-name",
+        "version": "1.1.3",
+        "license": "MIT",
+        "upstream": "git+ssh://git@github.com/dfcreative/color-name.git",
+        "npm_metadata_url": "https://registry.npmjs.org/color-name/1.1.3",
+        "npm_author_metadata": "DY"
+      },
+      {
+        "name": "color-name",
+        "version": "1.1.4",
+        "license": "MIT",
+        "upstream": "git+ssh://git@github.com/colorjs/color-name.git",
+        "npm_metadata_url": "https://registry.npmjs.org/color-name/1.1.4",
+        "npm_author_metadata": "DY"
+      },
+      {
+        "name": "color-string",
+        "version": "1.9.1",
+        "license": "MIT",
+        "upstream": "git+https://github.com/Qix-/color-string.git",
+        "npm_metadata_url": "https://registry.npmjs.org/color-string/1.9.1",
+        "npm_author_metadata": "Heather Arthur"
+      },
+      {
+        "name": "d3-color",
+        "version": "3.1.0",
+        "license": "ISC",
+        "upstream": "git+https://github.com/d3/d3-color.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-color/3.1.0",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-dispatch",
+        "version": "2.0.0",
+        "license": "BSD-3-Clause",
+        "upstream": "https://github.com/d3/d3-dispatch.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-dispatch/2.0.0",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-ease",
+        "version": "1.0.7",
+        "license": "BSD-3-Clause",
+        "upstream": "git+https://github.com/d3/d3-ease.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-ease/1.0.7",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-force",
+        "version": "2.1.1",
+        "license": "BSD-3-Clause",
+        "upstream": "https://github.com/d3/d3-force.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-force/2.1.1",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-interpolate",
+        "version": "3.0.1",
+        "license": "ISC",
+        "upstream": "git+https://github.com/d3/d3-interpolate.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-interpolate/3.0.1",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-quadtree",
+        "version": "2.0.0",
+        "license": "BSD-3-Clause",
+        "upstream": "https://github.com/d3/d3-quadtree.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-quadtree/2.0.0",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-timer",
+        "version": "1.0.10",
+        "license": "BSD-3-Clause",
+        "upstream": "git+https://github.com/d3/d3-timer.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-timer/1.0.10",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "d3-timer",
+        "version": "2.0.0",
+        "license": "BSD-3-Clause",
+        "upstream": "https://github.com/d3/d3-timer.git",
+        "npm_metadata_url": "https://registry.npmjs.org/d3-timer/2.0.0",
+        "npm_author_metadata": "Mike Bostock"
+      },
+      {
+        "name": "dagre",
+        "version": "0.8.5",
+        "license": "MIT",
+        "upstream": "git+https://github.com/dagrejs/dagre.git",
+        "npm_metadata_url": "https://registry.npmjs.org/dagre/0.8.5",
+        "npm_author_metadata": "Chris Pettitt"
+      },
+      {
+        "name": "detect-browser",
+        "version": "5.3.0",
+        "license": "MIT",
+        "upstream": "git+https://github.com/DamonOehlman/detect-browser.git",
+        "npm_metadata_url": "https://registry.npmjs.org/detect-browser/5.3.0",
+        "npm_author_metadata": "Damon Oehlman"
+      },
+      {
+        "name": "flru",
+        "version": "1.0.2",
+        "license": "MIT",
+        "upstream": "git+https://github.com/lukeed/flru.git",
+        "npm_metadata_url": "https://registry.npmjs.org/flru/1.0.2",
+        "npm_author_metadata": "Luke Edwards"
+      },
+      {
+        "name": "gl-matrix",
+        "version": "3.4.3",
+        "license": "MIT",
+        "upstream": "git+https://github.com/toji/gl-matrix.git",
+        "npm_metadata_url": "https://registry.npmjs.org/gl-matrix/3.4.3",
+        "npm_author_metadata": null
+      },
+      {
+        "name": "graphlib",
+        "version": "2.1.8",
+        "license": "MIT",
+        "upstream": "git+https://github.com/dagrejs/graphlib.git",
+        "npm_metadata_url": "https://registry.npmjs.org/graphlib/2.1.8",
+        "npm_author_metadata": "Chris Pettitt"
+      },
+      {
+        "name": "insert-css",
+        "version": "2.0.0",
+        "license": "MIT",
+        "upstream": "git://github.com/substack/insert-css.git",
+        "npm_metadata_url": "https://registry.npmjs.org/insert-css/2.0.0",
+        "npm_author_metadata": "James Halliday"
+      },
+      {
+        "name": "is-arrayish",
+        "version": "0.3.2",
+        "license": "MIT",
+        "upstream": "git+https://github.com/qix-/node-is-arrayish.git",
+        "npm_metadata_url": "https://registry.npmjs.org/is-arrayish/0.3.2",
+        "npm_author_metadata": "Qix"
+      },
+      {
+        "name": "lodash",
+        "version": "4.17.21",
+        "license": "MIT",
+        "upstream": "git+https://github.com/lodash/lodash.git",
+        "npm_metadata_url": "https://registry.npmjs.org/lodash/4.17.21",
+        "npm_author_metadata": "John-David Dalton"
+      },
+      {
+        "name": "ml-array-max",
+        "version": "1.2.4",
+        "license": "MIT",
+        "upstream": "git+https://github.com/mljs/array.git",
+        "npm_metadata_url": "https://registry.npmjs.org/ml-array-max/1.2.4",
+        "npm_author_metadata": "Michaël Zasso"
+      },
+      {
+        "name": "ml-array-min",
+        "version": "1.2.3",
+        "license": "MIT",
+        "upstream": "git+https://github.com/mljs/array.git",
+        "npm_metadata_url": "https://registry.npmjs.org/ml-array-min/1.2.3",
+        "npm_author_metadata": "Michaël Zasso"
+      },
+      {
+        "name": "ml-array-rescale",
+        "version": "1.3.7",
+        "license": "MIT",
+        "upstream": "git+https://github.com/mljs/array.git",
+        "npm_metadata_url": "https://registry.npmjs.org/ml-array-rescale/1.3.7",
+        "npm_author_metadata": "Michaël Zasso"
+      },
+      {
+        "name": "ml-matrix",
+        "version": "6.10.5",
+        "license": "MIT",
+        "upstream": "git+https://github.com/mljs/matrix.git",
+        "npm_metadata_url": "https://registry.npmjs.org/ml-matrix/6.10.5",
+        "npm_author_metadata": "Michaël Zasso"
+      },
+      {
+        "name": "process",
+        "version": "0.11.10",
+        "license": "MIT",
+        "upstream": "git://github.com/shtylman/node-process.git",
+        "npm_metadata_url": "https://registry.npmjs.org/process/0.11.10",
+        "npm_author_metadata": "Roman Shtylman"
+      },
+      {
+        "name": "simple-swizzle",
+        "version": "0.2.2",
+        "license": "MIT",
+        "upstream": "git+https://github.com/qix-/node-simple-swizzle.git",
+        "npm_metadata_url": "https://registry.npmjs.org/simple-swizzle/0.2.2",
+        "npm_author_metadata": "Qix"
+      },
+      {
+        "name": "tinycolor2",
+        "version": "1.6.0",
+        "license": "MIT",
+        "upstream": "git+https://github.com/bgrins/TinyColor.git",
+        "npm_metadata_url": "https://registry.npmjs.org/tinycolor2/1.6.0",
+        "npm_author_metadata": "Brian Grinstead"
+      },
+      {
+        "name": "tslib",
+        "version": "2.5.0",
+        "license": "0BSD",
+        "upstream": "git+https://github.com/Microsoft/tslib.git",
+        "npm_metadata_url": "https://registry.npmjs.org/tslib/2.5.0",
+        "npm_author_metadata": "Microsoft Corp."
+      },
+      {
+        "name": "tslib",
+        "version": "2.6.2",
+        "license": "0BSD",
+        "upstream": "git+https://github.com/Microsoft/tslib.git",
+        "npm_metadata_url": "https://registry.npmjs.org/tslib/2.6.2",
+        "npm_author_metadata": "Microsoft Corp."
+      }
+    ]
+  }
+}
